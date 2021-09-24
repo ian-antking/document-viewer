@@ -1,4 +1,6 @@
-import SubTitle from '../../components/subtitle';
+import base64 from 'base-64';
+import utf8 from 'utf8';
+import ReactMarkdown from 'react-markdown';
 
 const { API_URL } = process.env;
 
@@ -9,17 +11,19 @@ export async function getServerSideProps(context) {
   if (response.ok) {
     const { document } = await response.json();
 
-    return { props: { document } };
+    const contentBytes = base64.decode(document.content);
+    const content = utf8.decode(contentBytes);
+
+    return { props: { content } };
   }
 
-  return { props: { document: null }, notFound: true };
+  return { props: { content: null }, notFound: true };
 }
 
-export default function Document({ document }) {
+export default function Document({ content }) {
   return (
     <>
-      <SubTitle>{document.title}</SubTitle>
-      <span>{JSON.stringify(document)}</span>
+      <ReactMarkdown>{content}</ReactMarkdown>
     </>
   );
 }
