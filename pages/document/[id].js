@@ -1,4 +1,4 @@
-import SubTitle from '../components/subtitle';
+import SubTitle from '../../components/subtitle';
 
 const { API_URL } = process.env;
 
