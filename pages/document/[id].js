@@ -1,6 +1,7 @@
 import base64 from 'base-64';
 import utf8 from 'utf8';
 import ReactMarkdown from 'react-markdown';
+import DocumentCard from '../../components/document-card';
 
 const { API_URL } = process.env;
 
@@ -20,10 +21,12 @@ export async function getServerSideProps(context) {
   return { props: { content: null }, notFound: true };
 }
 
-export default function Document({ content }) {
+export default function DocumentPage({ content }) {
   return (
     <>
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <DocumentCard>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </DocumentCard>
     </>
   );
 }
