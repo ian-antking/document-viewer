@@ -5,5 +5,5 @@ export default styled.div`
   border: 3px solid ${(props) => props.theme.dark};
   margin: 20px;
   padding: 20px;
-  border-radius: 2%;
+  border-radius: 5pt;
 `;
