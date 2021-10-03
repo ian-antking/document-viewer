@@ -44,6 +44,8 @@ export default function EditPage({ content, name, apiUrl }) {
   const router = useRouter();
   const submitDocument = async (event) => {
     event.preventDefault();
+    // eslint-disable-next-line no-alert
+    const password = window.prompt('password:');
 
     const newContent = base64.encode(event.target.documentInput.value);
     const newName = event.target.nameInput.value;
@@ -60,7 +62,7 @@ export default function EditPage({ content, name, apiUrl }) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        authorization: event.target.passwordInput.value,
+        authorization: password,
       },
     });
 
@@ -85,10 +87,6 @@ export default function EditPage({ content, name, apiUrl }) {
             <TextInput name="nameInput" type="text" defaultValue={name} />
           </Row>
           <DocumentEditor name="documentInput" defaultValue={content} />
-          <Row>
-            <TextLabel for="passwordInput">password:</TextLabel>
-            <TextInput name="passwordInput" type="password" />
-          </Row>
           <Row>
             <Button>Delete</Button>
             <Button type="submit">Save</Button>
