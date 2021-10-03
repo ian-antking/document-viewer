@@ -1,4 +1,5 @@
 import base64 from 'base-64';
+import { useRouter } from 'next/router';
 import DocumentCard from '../../components/document-card';
 import SubTitle from '../../components/subtitle';
 import Row from '../../components/row';
@@ -40,6 +41,7 @@ export async function getServerSideProps(context) {
 }
 
 export default function EditPage({ content, name, apiUrl }) {
+  const router = useRouter();
   const submitDocument = async (event) => {
     event.preventDefault();
 
@@ -62,9 +64,15 @@ export default function EditPage({ content, name, apiUrl }) {
       },
     });
 
-    const responseBody = await response.json;
+    const responseBody = await response.json();
 
-    console.log(responseBody);
+    if (response.ok) {
+      const id = apiUrl.split('/').reverse()[0];
+      router.push(`/view/${id}`);
+    } else {
+      // eslint-disable-next-line no-alert
+      window.alert(responseBody.message);
+    }
   };
 
   return (
