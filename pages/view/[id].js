@@ -1,5 +1,4 @@
 import base64 from 'base-64';
-import utf8 from 'utf8';
 import ReactMarkdown from 'react-markdown';
 import DocumentCard from '../../components/document-card';
 
@@ -12,8 +11,7 @@ export async function getServerSideProps(context) {
   if (response.ok) {
     const { document } = await response.json();
 
-    const contentBytes = base64.decode(document.content);
-    const content = utf8.decode(contentBytes);
+    const content = base64.decode(document.content);
 
     return { props: { content } };
   }

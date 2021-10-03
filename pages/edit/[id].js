@@ -1,5 +1,4 @@
 import base64 from 'base-64';
-import utf8 from 'utf8';
 import DocumentCard from '../../components/document-card';
 import SubTitle from '../../components/subtitle';
 import Row from '../../components/row';
@@ -12,37 +11,82 @@ const { API_URL } = process.env;
 
 export async function getServerSideProps(context) {
   const { id } = context.params;
-  console.log(id);
-  const response = await fetch(`${API_URL}/${id}`);
+  const apiUrl = `${API_URL}/${id}`;
+  const response = await fetch(apiUrl);
   if (response.ok) {
-    const { document } = await response.json();
+    const { document, name } = await response.json();
 
-    const contentBytes = base64.decode(document.content);
-    const content = utf8.decode(contentBytes);
+    const content = base64.decode(document.content);
 
-    return { props: { content, id } };
+    return {
+      props: {
+        content,
+        id,
+        name,
+        apiUrl,
+      },
+    };
   }
 
-  return { props: { content: null, id: null }, notFound: true };
+  return {
+    props: {
+      content: null,
+      id: null,
+      name: null,
+      apiUrl,
+    },
+    notFound: true,
+  };
 }
 
-export default function EditPage({ content, id }) {
+export default function EditPage({ content, name, apiUrl }) {
+  const submitDocument = async (event) => {
+    event.preventDefault();
+
+    const newContent = base64.encode(event.target.documentInput.value);
+    const newName = event.target.nameInput.value;
+
+    const data = {
+      name: newName,
+      document: {
+        content: newContent,
+      },
+    };
+
+    const response = await fetch(apiUrl, {
+      body: JSON.stringify(data),
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: event.target.passwordInput.value,
+      },
+    });
+
+    const responseBody = await response.json;
+
+    console.log(responseBody);
+  };
+
   return (
     <>
-    <SubTitle>Edit</SubTitle>
-    <DocumentCard>
-      <DocumentEditor id="document-input" name="document-input" >
-        {content}
-      </DocumentEditor>
-      <Row>
-        <TextLabel for="password-input">password:</TextLabel>
-        <TextInput id="password-input" name="password-input" type="password" />
-      </Row>
-      <Row>
-        <Button>Delete</Button>
-        <Button>Save</Button>
-      </Row>
-    </DocumentCard>
+      <SubTitle>Edit</SubTitle>
+      <DocumentCard>
+        <form onSubmit={submitDocument}>
+          <Row>
+            <TextLabel for="nameInput">name:</TextLabel>
+            <TextInput name="nameInput" type="text" defaultValue={name} />
+          </Row>
+          <DocumentEditor name="documentInput" defaultValue={content} />
+          <Row>
+            <TextLabel for="passwordInput">password:</TextLabel>
+            <TextInput name="passwordInput" type="password" />
+          </Row>
+          <Row>
+            <Button>Delete</Button>
+            <Button type="submit">Save</Button>
+          </Row>
+        </form>
+      </DocumentCard>
     </>
   );
 }
